@@ -1,0 +1,121 @@
+{"intents": [
+         {"tag": "Salutation",
+         "patterns": [ ],
+         "responses": [ "desolé"],
+         "context": [""]
+        },
+        {"tag": "Salutation_2",
+         "patterns": ["Salam", "ahya", "slt","cc","salut","bonjour","bonsoir" ],
+         "responses": [ "Salam", "salut, comment je peux t'aider"],
+         "context": [""]
+        },
+        {"tag": "goodbye",
+         "patterns": ["au revoir", "à bientot", "Merci, bonne journée", "bye", "à tout a l'heure"],
+         "responses": ["à bientot!", "bonne journée", "Au revoir, je serai toujours la pour vous aider"],
+         "context": [""]
+        },
+        {"tag": "thanks",
+         "patterns": ["Merci"],
+         "responses": ["De rien", "Avec plaisir", "de rien, bonne chance"],
+         "context": [""]
+        },
+        {"tag": "noanswer",
+         "patterns": [" "],
+         "responses": ["Désolé , j'ai pas compris", "pouvez-vous répeter la question", "je suis pas sure que j'ai compris votre question"],
+         "context": [""]
+        },
+        {"tag": "options",
+         "patterns": ["aider", "que ce que tu peux faire pour moi?", "quelle type d'information peux-tu me donner", "que ce que tu fais"],
+         "responses": ["je peux te donner des informations sur différentes écoles d'ingenieur au maroc", "je suis a votre disposition pour vous aider a se renseigner sur les écoles d ingenieur au maroc"],
+         "context": [""]
+        },
+        {"tag": "ENSIAS",
+         "patterns": [  "ENSIAS"],
+         "responses": ["Fondée en 1992, l'École Nationale Supérieure d'Informatique et d'Analyse des Systèmes (ENSIAS) est l'un des dix établissements de l'Université Mohammed V – Souissi. C'est une grande école d'ingénieurs spécialisée en Technologies de l'Information et de la Communication. Elle a pour missions la formation d'ingénieurs d'état et la recherche en vue du développement technologique et économique du Maroc."],
+         "context": [""]
+        },
+         {"tag": "filière_ensias",
+         "patterns": ["filiere ENSIAS","filieres ENSIAS","filière ENSIAS" ,"filières ENSIAS", "formation ENSIAS"],
+         "responses": ["Huit (8) filières sont offertes aux élèves ingénieurs depuis la deuxième année, la première étant un tronc commun entre toutes les filières. Elles émanent des 6 départements de l'ENSIAS. Les spécialisations sont :1-e-Management and Business Intelligence (eMBI) 2- Ingénierie Intelligence Artificielle (2IA) 3- Ingénierie Digitale pour la Finance (IF) 4- Génie Logiciel (GL) 5- Ingénierie e-Logistique (IeL) 6- Ingénierie des Systèmes Embarqués et Mobiles (ISEM) 7- Ingénierie du Web et Informatique Mobile (IWIM) 8- Sécurité des Systèmes d'Information (SSI) "],
+         "context": [""]
+        },
+         {"tag": "double_diplomation_ENSIAS",
+         "patterns": [ "Double diplomation ENSIAS" , "mobilite ENSIAS", "DD ensias" ],
+         "responses":["L'ENSIAS encourage, depuis 1995, la mobilité internationale de ses étudiants. Cette mobilité concerne les étudiants des filières ingénieurs, masters et doctorat,Un réseau d'écoles d'ingénieurs partenaires accueille nos élèves ingénieurs soit dans le cadre de convention d'échanges d'étudiants pour suivre la troisième année à l'étranger (ENSIMAG , ENSEIRB , ENSEEIHT , ESIEE , ISIMA , Telecom Saint Etienne , Ecole des Mines de Saint Etienne , Université de Stockholm , ENSI de Tunis , Université de Sherbrooke ) ou dans le cadre de programmes de double diplômation qui offre la possibilité d'avoir un double diplôme (actuellement avec l'ENSIMAG et l'ISIMA) "],
+         "context": [""]
+        },
+         {"tag": "club_ENSIAS",
+         "patterns": [ "club ENSIAS", "parascolaire ENSIAS"   ],
+         "responses":[" A L'ENSIAS il existe plusieurs clubs :1-Club ENSIAS IT 2- Club ENSIAS AI 3- Club CINDH  "],
+         "context": [""]
+        },
+          {"tag": "ecole_informatique",
+         "patterns": ["école informatique", "école d'info", "école IT" , "ecole informatique" , "ecole d'info","ecole d info"  ],
+         "responses":["les écoles d'informatique qui existe au maroc sont : ENSIAS et INPT "],
+         "context": [""]
+        },
+            {"tag": "INPT",
+         "patterns": ["INPT" ],
+         "responses":["L'institut National des Postes et Télécommunications (INPT) est un établissement d'enseignement supérieur, rattaché à l’Agence Nationale de Réglementation des Télécommunications (ANRT) de par la loi 24-96  relative à la poste et aux télécommunications promulguée par le dahir n°1-97-162 du 2 rabii II 1418 (7 août 1997), telle qu’elle a été modifiée et complétée, notamment son article 107. L’INPT est également régi par le décret n° 2-11-82 du 7 Ramadan 1432 (8 Août 2011) portant réorganisation de l’Institut National des Postes et Télécommunications. L’INPT a pour mission la formation, la recherche et l’expertise. Il est chargé de la formation initiale et de la formation continue dans les domaines des télécommunications, des technologies de l’information et de la communication et disciplines connexes."],
+         "context": [""]
+        },
+        {"tag": "INPT_filiere",
+         "patterns": ["filiere INPT","filieres INPT","filière INPT" ,"filières INPT", "formation INPT"],
+         "responses":["Sept (7) filières sont offertes aux élèves ingénieurs à L'INPT : 1- Ingénieur des Sciences de Données 2- Advanced Software Engineering for Digital Services (A.S.E.D.S) 3- Systèmes Embraqués et Services Numériques 4- Filière Ingénierie Smart  ICT« Smart Information & Communication Technology Engineering » 5- Filière Ingénierie des Systèmes Ubiquitaires et Distribués – Cloud et IoT (SUD) 6- Filière Ingénieur Cybersécurité Et Confiance Numérique 7- Filière Ingénieur Innovation et AMOA ;  pour plus d'information veuillez consulter le site suivant: https://www.inpt.ac.ma/fr/fili%C3%A8res-m%C3%A9tiers-acc%C3%A8s-en-1%C3%A8re-ann%C3%A9e "],
+         "context": [""]
+        },
+        {"tag": "double_diplomation_INPT",
+         "patterns": [ "Double diplomation INPT" , "mobilite INPT", "DD INPT" ],
+         "responses":["A travers les années, l’INPT a pu développer des accords de coopération et de partenariat, en matière de formation et de recherche avec des établissements de renommée à l’échelle internationale.Chaque année, les étudiants de 2ème année du cycle ingénieur postulent aux programmes d’échanges dans le cadre de leur mobilité vers des établissements partenaires comme (IMT Lille Douai,IMT Atlantique,Centrale Supélec,Télécom Sud Paris,Télécom Paris Tech,ESISAR,ENSIMAG,ENSEA,ENSTA Paris Tech,Télécom Saint Etienne,Ecole des Mines Saint Etienne,INSA Lyon,) "],
+         "context": [""]
+        },
+        {"tag": "club_Inpt",
+         "patterns": [ "club INPT", "parascolaire INPT"   ],
+         "responses":[" A L'INPT il existe plusieurs clubs : ENACTUS-INPT - CESE INPT - A2S INPT - IEEE INPT - CLUB AFFAIRE SOCIAL INPT - FORUM GENI ENTREPRISE - INPT ART - CLUB GREAT DEBATERS - CIT INPT "],
+         "context": [""]
+        },
+          {"tag": "EMI",
+         "patterns": ["EMI" ],
+         "responses":["L’Ecole Mohammadia est une grande école d’ingénieurs sise à Rabat au Maroc. Elle est affiliée à l’Université Mohammed V de Rabat et fait donc partie du Ministère de l’Enseignement Supérieur, de la Recherche Scientifique et de la Formation des Cadres. Elle est située au Quartier Agdal où elle occupe une superficie totale de 8 hectares. Son entrée principale donne sur l’avenue Ibn Sina et est agrémentée d’une horloge qui fut réalisée dans les années soixante par des élèves de l’Ecole sous la conduite d’un de leurs professeurs. Toujours opérationnelle, elle symbolise la créativité et le savoir-faire des élèves ingénieurs de l’EMI."],
+         "context": [""]
+        },
+          {"tag": "EMI_filiere",
+         "patterns": ["filiere EMI","filieres EMI","filière EMI" ,"filières EMI", "formation EMI"],
+         "responses":[" L’EMI offre 8 filières englobant la plupart des grands domaines de l’ingénierie. Les étudiants choisissent une filière dès leur entrée à l’Ecole en première année. Leur choix est satisfait selon le classement dans le concours national commun.Parmis ses filières : Génie Civil - Génie Electrique  -Génie Industriel - Génie Informatique - Ingénierie Mécanique  - Génie minérale - Génie MIS - Génie des procédés"],
+         "context": [""]
+        }, 
+         {"tag": "double_diplomation_EMI",
+         "patterns": [ "Double diplomation EMI" , "mobilite EMI", "DD EMI" ],
+         "responses":["L’ EMI Rabat est membre et bureau du W3C l’EMI accorde la plus grande importance à ses relations avec les établissements universitaires avec lesquel elle partage les mêmes préocupations scientifiques.Plus de 30 conventions ont été signées avce les universités et les écoles africaines , américaines ,belges , canadiennes , espagnoles , francaises , italiennes , maghrebines , polonaises , suisses , etc … Des projets ponctuels de coopération inter-universitaires sont en cours d’execution , (actions integrées , projets de recherche , projets MEDA TEMPUS .etc ).Cette coopération est élargie aux organismes non universitaires comme le CNES , l’Agence de coopération Midi-pyrennées , SAMTECH … etc .) une coolaboration étroite est engagée avec les organismes internationaux : ACDI , AIDO , AIE , AIEA , AUPELF, CNUCED , OMS , ONUDI , PNUD , UNESCO , ALESCO , ISESCO , UREF , USAID , UASA , MIT , INRIA … etc "],
+         "context": [""]
+        },
+        {"tag": "club_EMI",
+         "patterns": [ "club EMI", "parascolaire EMI"   ],
+         "responses":["Les étudiants de l’ EMI Rabat sont réputés par leur esprit créatif et rigoureux dans l’organisation des évènements et des activités parascolaires, un large éventail de clubs ont été créé : EMInence: Revue des élèves. EMIcar: Fabrication d’une voiture écologique. EMInd: Développement personnel des étudiants. EMImovies: Centré autour du monde des médias. SIFE EMI: Students In Free Entreprise. EMI Sport: Organisateur et représantant de l’EMI aux évènements sprotifs inter-écoles. EMI-Excursion: organisation d’excursions, de visites et de voyages organisés au Maroc ou à l’étranger. Ajoutant à cela des événements de renommée tels que : Forum EMI- Entreprises, EMIcatronique, EMIcarrefour, Linux Party, EMItic, IT’Security, EMIrisk Management, EMI Environnement. "],
+         "context": [""]
+        },
+         {"tag": "ENIM",
+         "patterns": ["ENIM" , "ENSMR" ],
+         "responses":["Depuis sa création en 1972, l’Ecole Nationale de l’Industrie Minérale n’a cessé d’évoluer pour répondre aux besoins du marché national en ingénieurs polyvalents de haute qualité, aptes à exercer leurs fonctions dans un environnement marqué par la mondialisation. En effet l’ingénieur ENIMiste est un acteur économique dont la vocation est de concevoir, d’implanter, de gérer, de diriger des systèmes industriels d’envergure. Son profil lui permet ainsi d’intégrer rapidement des secteurs d’activités variés, et de s’adapter à un monde en perpétuelle mutation."],
+         "context": [""]
+        },
+        {"tag": "ENIM_filiere",
+         "patterns": ["filiere ENIM","filieres ENIM","filière ENIM" ,"filières ENIM", "formation ENIM", "filiere ENSMR","filieres ENSMR","filière ENSMR" ,"filières ENSMR", "formation ENSMR"],
+         "responses":["(9) filières sont offertes aux élèves ingénieurs à L'ENSMR : ELM : Electromécanique - MCQ : Matériaux et Contrôle Qualité - MSIP : Management des Systèmes d'Information et de Production - AE3S : Aménagement et Exploitation de Sol et Sous-Sol - 2GHM : Hydrogéotechnique et Minier - ESI : Environnement et Sécurité Industriels - GE : Génie Energétique - IP : Procédés Industriels - INDUS : Génie Industriel"],
+         "context": [""]
+        },
+        {"tag": "double_diplomation_ENIM",
+         "patterns": [ "Double diplomation ENIM" , "mobilite ENIM", "DD ENIM","Double diplomation ENSMR" , "mobilite ENSMR", "DD ENSMR" ],
+         "responses":["L’ EMI Rabat est membre et bureau du W3C l’EMI accorde la plus grande importance à ses relations avec les établissements universitaires avec lesquel elle partage les mêmes préocupations scientifiques.Plus de 30 conventions ont été signées avce les universités et les écoles africaines , américaines ,belges , canadiennes , espagnoles , francaises , italiennes , maghrebines , polonaises , suisses , etc … Des projets ponctuels de coopération inter-universitaires sont en cours d’execution , (actions integrées , projets de recherche , projets MEDA TEMPUS .etc ).Cette coopération est élargie aux organismes non universitaires comme le CNES , l’Agence de coopération Midi-pyrennées , SAMTECH … etc .) une coolaboration étroite est engagée avec les organismes internationaux : ACDI , AIDO , AIE , AIEA , AUPELF, CNUCED , OMS , ONUDI , PNUD , UNESCO , ALESCO , ISESCO , UREF , USAID , UASA , MIT , INRIA … etc "],
+         "context": [""]
+        },
+        {"tag": "club_ENSMR",
+         "patterns": [ "club ENIM", "parascolaire ENIM","club ENSMR", "parascolaire ENSMR"   ],
+         "responses":[" Désolé je suis pas trés renseigné à propos de ce sujet "],
+         "context": [""]
+        }
+
+             
+      
+   ]
+}
