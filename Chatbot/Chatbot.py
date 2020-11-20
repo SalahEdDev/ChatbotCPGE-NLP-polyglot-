@@ -1,115 +1,188 @@
-# -*- coding: utf-8 -*-
-import polyglot
-from polyglot.stem import WordNetLemmatizer
-lemmatizer = WordNetLemmatizer()
-import pickle
+Multi-langid based on a pre-trained P(w|t) and a Gibbs sampler for
+estimating P(t|d).
+Marco Lui, March 2013
+
+import argparse, sys 
+import multiprocessing as mp
 import numpy as np
-import flask
-from flask import request, jsonify
-from flask import json,Response
-from flask_cors import CORS, cross_origin
-
-
-
-
-from keras.models import load_model
-model = load_model('chatbot_model.h5')
+import logging
 import json
-import random
-intents = json.loads(open('intents.json').read())
-words = pickle.load(open('words.pkl','rb'))
-classes = pickle.load(open('classes.pkl','rb'))
+import tarfile
+logger = logging.getLogger(__name__)
 
 
-def clean_up_sentence(sentence):
-    # tokenize the pattern - split words into array
-    sentence_words = polytlog.word_tokenize(sentence)
-    # stem each word - create short form for word
-    sentence_words = [lemmatizer.lemmatize(word.lower()) for word in sentence_words]
-    return sentence_words
+from identifier import MultiLanguageIdentifier
+from utils import Timer, MapPool
+import config
 
-# return bag of words array: 0 or 1 for each word in the bag that exists in the sentence
+def setup_identify(model_path, langs=None, n_iters=None, max_lang=None, thresh=None, prior=None):
+  global _identifier
 
-def bow(sentence, words, show_details=True):
-    # tokenize the pattern
-    sentence_words = clean_up_sentence(sentence)
-    # bag of words - matrix of N words, vocabulary matrix
-    bag = [0]*len(words)  
-    for s in sentence_words:
-        for i,w in enumerate(words):
-            if w == s: 
-                # assign 1 if current word is in the vocabulary position
-                bag[i] = 1
-                if show_details:
-                    print ("found in bag: %s" % w)
-    return(np.array(bag))
+  n_iters = n_iters if n_iters is not None else config.N_ITERS
+  max_lang = max_lang if max_lang is not None else config.MAX_LANG
+  thresh = thresh if thresh is not None else config.THRESHOLD
+  _identifier = MultiLanguageIdentifier.from_modelpath(model_path, langs, n_iters, max_lang, thresh, prior)
 
-def predict_class(sentence, model):
-    # filter out predictions below a threshold
-    p = bow(sentence, words,show_details=False)
-    res = model.predict(np.array([p]))[0]
-    ERROR_THRESHOLD = 0.25
-    results = [[i,r] for i,r in enumerate(res) if r>ERROR_THRESHOLD]
-    # sort by strength of probability
-    results.sort(key=lambda x: x[1], reverse=True)
-    return_list = []
-    for r in results:
-        return_list.append({"intent": classes[r[0]], "probability": str(r[1])})
-    return return_list
+def setup_default_identify(langs=None, n_iters = None, max_lang=None, thresh=None, prior=None):
+  global _identifier
 
-def getResponse(ints, intents_json):
-    tag = ints[0]['intent']
-    list_of_intents = intents_json['intents']
-    for i in list_of_intents:
-        if(i['tag']== tag):
-            result = random.choice(i['responses'])
-            break
-    return result
-
-def chatbot_response(msg):
-    ints = predict_class(msg, model)
-    res = getResponse(ints, intents)
-    return res
-
-class Responsee:   
-    reponse="a"
-    # The class "constructor" - It's actually an initializer 
-    def __init__(self, reponse):
-        self.reponse = reponse
-        
+  n_iters = n_iters if n_iters is not None else config.N_ITERS
+  max_lang = max_lang if max_lang is not None else config.MAX_LANG
+  thresh = thresh if thresh is not None else config.THRESHOLD
+  _identifier = MultiLanguageIdentifier.default(langs, n_iters, max_lang, thresh, prior)
 
 
-app = flask.Flask(__name__)
+def explain(doc):
+  """
+  Explain the document as a distribution of tokens over the full language set.
+  """
+  global _identifier
+  name, text = doc
+
+  fv = _identifier.instance2fv(text)
+  if fv.sum() == 0:
+    # empty document
+    return {'path':name, 'langs':{}}
+  retval = _identifier.explain(fv)
+  
+  # normalize
+  retval = retval.astype(float) / retval.sum()
+  lang_preds = dict((k,v) for k,v in zip(_identifier.nb_classes, retval) if v > 0 )
+  return {'path':name, 'langs':lang_preds}
+
+def identify(doc):
+  global _identifier
+  name, text = doc
+
+  try:
+    pred = _identifier.identify(text)
+  except ValueError:
+    pred = {}
+
+  return {'path':name, 'langs':pred}
+
+def tokenize(doc):
+  name, text = doc
+  global _identifier
+  return _identifier.instance2fv(text)
+
+def main():
+  # TODO: output parameters used
+  # TODO: output distribution
+  parser = argparse.ArgumentParser()
+  parser.add_argument('--iters','-i',type=int, metavar='N', default=config.N_ITERS,
+                      help="perform N iterations of Gibbs sampling (default: {})".format(config.N_ITERS) )
+  parser.add_argument('--jobs','-j',type=int, metavar='N', help="use N processes", default=mp.cpu_count())
+  parser.add_argument('--output','-o', help="output file (json format)", type=argparse.FileType('w'), default=sys.stdout)
+  parser.add_argument('--max_lang', type=int, default=config.MAX_LANG,
+                      help="maximum number of langugages to consider per-document (default: {})".format(config.MAX_LANG))
+  parser.add_argument('--thresh', '-t', type=float, default=config.THRESHOLD,
+                      help="threshold for including a language (default: {})".format(config.THRESHOLD))
+  parser.add_argument('--model', '-m', metavar="MODEL", help="path to model")
+  parser.add_argument('--verbose', '-v', action='store_true', help="verbose output")
+  parser.add_argument('--explain', '-e', action='store_true', help="only explain documents as a breakdown over the full language set")
+  parser.add_argument('-l', '--langs', dest='langs', help='comma-separated set of target ISO639 language codes (e.g en,de)')
+  parser.add_argument('--prior', '-p', nargs="?", const=True, help="use prior from file PRIOR (computed if PRIOR is not specified)")
+
+  docgroup = parser.add_mutually_exclusive_group(required=True)
+  docgroup.add_argument('--tarfile', help="process documents in a tarfile")
+  docgroup.add_argument('--bootcat', help="process a bootcat corpus")
+  docgroup.add_argument('--docs', metavar='FILE', help='files to process (read from stdin if blank)', nargs='*')
+
+  args = parser.parse_args()
+
+  logging.basicConfig(level=logging.DEBUG if args.verbose else logging.WARNING)
+
+  
+  if args.langs:
+    langs = args.langs.strip().split(',')
+    logger.debug( "restricting language set to: {0}".format(langs))
+  else:
+    langs = None
+
+  if args.model:
+    initalizer = setup_identify
+    initargs = (args.model, langs, args.iters, args.max_lang, args.thresh)
+    avail_langs = set(MultiLanguageIdentifier.list_langs(args.model))
+  else:
+    initalizer = setup_default_identify
+    initargs = (langs, args.iters, args.max_lang, args.thresh)
+    avail_langs = set(MultiLanguageIdentifier.list_langs())
+
+  if langs is not None:
+		for l in langs:
+			if l not in avail_langs:
+				parser.error("language {} not in the available set".format(l))
+
+  #if args.docs and args.tarfile:
+  #  parser.error("no files should be specified if tarfile is used")
+
+  if args.docs:
+    # A list of paths was provided with the invocation
+    doclist = args.docs
+    num_docs = len(doclist)
+    docs = ((d, open(d).read()) for d in doclist)
+    chunksize = max(1,num_docs / (args.jobs + 4))
+    if num_docs < args.jobs:
+      args.jobs = num_docs
+    logger.info( "processing {0} docs".format(num_docs) )
+  elif args.tarfile:
+    # A tarfile is to be processed
+    archive = tarfile.open(args.tarfile)
+    docs = ((m.name, archive.extractfile(m).read()) for m in archive if m.isfile())
+    chunksize = 20 
+    logger.info( "processing a tarfile" )
+  elif args.bootcat:
+    # Process a bootcat corpus
+    def bootcat_iter(path):
+      with open(path) as in_f:
+        for row in in_f:
+          if row.startswith('CURRENT URL'):
+            docname = row.split()[-1]
+          else:
+            yield (docname, row)
+    docs = bootcat_iter(args.bootcat)
+    chunksize = 20 
+    logger.info( "processing a bootcat corpus" )
+  else:
+    # A list of files is read from stdin if filenames are not provided
+    doclist = map(str.strip, sys.stdin)
+    num_docs = len(doclist)
+    docs = ((d, open(d).read()) for d in doclist)
+    chunksize = max(1,num_docs / (args.jobs + 4))
+    if num_docs < args.jobs:
+      args.jobs = num_docs
+    logger.info( "processing {0} docs".format(num_docs) )
+
+  if args.prior:
+    if args.prior is True:
+      logger.debug("using average document as prior")
+      with MapPool(args.jobs, initalizer, initargs, chunksize=chunksize) as p:
+        fvs = [ v.astype(float) / v.sum() for v in p(tokenize, docs)]
+      prior = np.sum(fvs, axis=0)
+    else:
+      logger.debug("loading prior from: {0}".format(args.prior))
+      with open(args.prior) as f:
+        reader = csv.reader(f)
+        prior = map(float, reader.next())
+
+    initargs += (prior,)
+
+  # Determine the type of output
+  if args.explain:
+    process = explain 
+  else:
+    process = identify
 
 
-app.config["DEBUG"] = False
-app.config['JSON_AS_ASCII'] = False
-app.config['CORS_HEADERS'] = "Content-Type"
-cors = CORS(app, resources={r"/chat/*": {"origins": "*"}})
+  # Process the documents specified
+  doc_count = 0
+  with MapPool(args.jobs, initalizer, initargs, chunksize=chunksize) as p, Timer() as t:
+    for retval in p(process, docs):
+      json.dump(retval, args.output)
+      args.output.write('\n')
+      doc_count += 1
+      logger.info("processed {0} docs in {1:.2f}s ({2:.2f} r/s)".format(doc_count, t.elapsed, t.rate(doc_count) ))
 
-
-
-question=" "
-res=""
-
-
-@app.route('/chat/', methods=['GET'])
-@cross_origin(origin='*',headers=['Content-Type'])
-
-def chat():
-    query_parameters = request.args
-    question = query_parameters.get('question')
-    res=chatbot_response(question)
-    r=Responsee(res)
-    x =res
-   
-
-    
-    print(question) 
-    return jsonify(x)
-
-res=chatbot_response(question)
-
-
-
-app.run()
+if __name__ == "__main__":
+  main()
